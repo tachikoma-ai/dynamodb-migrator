@@ -3,6 +3,7 @@ import os
 import subprocess
 from datetime import datetime
 from math import ceil
+from typing import Optional
 
 
 def export_db(db_name_export: str, path: str) -> str:
@@ -82,13 +83,17 @@ def import_db(file_path: str, db_name_import: str) -> None:
     )
 
 
-def migrate() -> None:
-    db_name_export: str = input("\nName of DynamoDB table to export from: ")
+def migrate(
+    db_name_export: Optional[str] = None, db_name_import: Optional[str] = None
+) -> None:
+    if not db_name_export:
+        db_name_export: str = input("\nName of DynamoDB table to export from: ")
     EXPORT_PATH: str = "exports/"  # with no slash at the beginning
     # Export data from the export table
     export_file_path: str = export_db(db_name_export, EXPORT_PATH)
     # Import data into the import table
-    db_name_import: str = input("\nName of DynamoDB table to import to: ")
+    if not db_name_import:
+        db_name_import: str = input("\nName of DynamoDB table to import to: ")
     import_db(export_file_path, db_name_import)
 
 
