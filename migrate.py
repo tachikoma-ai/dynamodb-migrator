@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 from datetime import datetime
+from math import ceil
 
 
 def export_db(db_name_export: str, path: str) -> str:
@@ -44,6 +45,7 @@ def import_db(file_path: str, db_name_import: str) -> None:
     BATCH_SIZE: str = 25
     batch_number: int = 1
     count: int = 0
+    nb_batches: int = ceil(len(data["Items"]) / BATCH_SIZE)
 
     for item in data["Items"]:
 
@@ -55,6 +57,9 @@ def import_db(file_path: str, db_name_import: str) -> None:
         count += 1
 
         if (count % BATCH_SIZE == 0) or (count == len(data["Items"])):
+
+            print(f"\nImporting batch {batch_number}/{nb_batches}")
+
             # Save the transformed data to a file
             import_filename: str = f"{db_name_import}_import_{batch_number}.json"
             with open(import_filename, "w") as outfile:
