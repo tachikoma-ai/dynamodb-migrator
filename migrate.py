@@ -3,18 +3,20 @@ import os
 import subprocess
 from datetime import datetime
 
-DB_NAME_EXPORT: str = "my-dynamodb-table-name-to-export-from"
-DB_NAME_IMPORT: str = "my-dynamodb-table-name-to-import-into"
 
-
-def export_db(db_name_export: str) -> str:
+def export_db(db_name_export: str, path: str) -> str:
     """
-    Export DynamoDB table content to a local JSON file
+    Export DynamoDB table content to a local JSON file.
+    Output: the export file path
     """
     export_filename: str = (
         f"{db_name_export}_export_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
     )
-    export_command: str = f"aws dynamodb scan --table-name {db_name_export} --no-paginate > {export_filename}"
+    if not os.path.exists(path):
+        # Create the directory because it does not exist
+        os.makedirs(os.path.join(os.getcwd(), path))
+    export_file_path: str = os.path.join(os.getcwd(), path, export_filename)
+    export_command: str = f"aws dynamodb scan --table-name {db_name_export} --no-paginate > {export_file_path}"
     subprocess.call(
         export_command,
         shell=True,
@@ -22,20 +24,22 @@ def export_db(db_name_export: str) -> str:
         stderr=subprocess.PIPE,
     )
 
-    print(f"Exported '{db_name_export}' to '{export_filename}'")
+    print(f"\nTable '{db_name_export}' exported to '{export_file_path}'")
 
-    return export_filename
+    return export_file_path
 
 
-def import_db(filename: str, db_name_import: str) -> None:
+def import_db(file_path: str, db_name_import: str) -> None:
     """
-    Load the data from a local JSON file, separate into batches file of 25 while reformatting items, and import them one by one to the DynamoDB table to import to
+    Load the data from a local JSON file, separate into batches file of 25 while reformatting items, and import them one by one to the DynamoDB table to import to.
     """
 
     # Load the data from the local file
-    with open(filename) as infile:
+    with open(file_path) as infile:
         data: dict = json.load(infile)
-    print(f"Reading {len(data['Items'])} items")
+    if "Items" not in data:
+        raise Exception(f"'{file_path}' seems to be invalid: no 'Items' key found")
+    print(f"\nReading {len(data['Items'])} items")
 
     BATCH_SIZE: str = 25
     batch_number: int = 1
@@ -68,11 +72,19 @@ def import_db(filename: str, db_name_import: str) -> None:
 
             os.remove(import_filename)
 
-    print(f"Imported {count} items in {batch_number - 1} batches to '{db_name_import}'")
+    print(
+        f"\nImported {count} items in {batch_number - 1} batches to '{db_name_import}'"
+    )
 
 
-if __name__ == "__main__":
+def migrate() -> None:
+    db_name_export: str = input("\nName of DynamoDB table to export from: ")
+    EXPORT_PATH: str = "exports/"  # with no slash at the beginning
     # Export data from the export table
-    export_filename: str = export_db(DB_NAME_EXPORT)
+    export_file_path: str = export_db(db_name_export, EXPORT_PATH)
     # Import data into the import table
-    import_db(export_filename, DB_NAME_IMPORT)
+    db_name_import: str = input("\nName of DynamoDB table to import to: ")
+    import_db(export_file_path, db_name_import)
+
+
+migrate()

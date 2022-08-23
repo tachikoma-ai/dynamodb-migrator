@@ -13,9 +13,9 @@ It doesn't need any Python virtual environement to be run in as it doesn't requi
 
 - Set up your AWS credentials and region
 
-- Set the DynamoDB table name to export as `DB_NAME_EXPORT` and the DynamoDB table name to import as `DB_NAME_IMPORT` in `__main__.py`.
-
 - Run with:
 ```bash
-python __main__.py
+python migrate.py
 ```
+
+- Input the DynamoDB table name to export as and the DynamoDB table name to import as, as prompted.
