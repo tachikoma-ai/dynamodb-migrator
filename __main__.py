@@ -9,13 +9,18 @@ DB_NAME_IMPORT: str = "my-dynamodb-table-name-to-import-into"
 
 def export_db(db_name_export: str) -> str:
     """
-    Export data to a local JSON file
+    Export DynamoDB table content to a local JSON file
     """
     export_filename: str = (
         f"{db_name_export}_export_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
     )
     export_command: str = f"aws dynamodb scan --table-name {db_name_export} --no-paginate > {export_filename}"
-    subprocess.call(export_command, shell=True)
+    subprocess.call(
+        export_command,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
 
     print(f"Exported '{db_name_export}' to '{export_filename}'")
 
@@ -24,7 +29,7 @@ def export_db(db_name_export: str) -> str:
 
 def import_db(filename: str, db_name_import: str) -> None:
     """
-    Load the data from a local JSON file, separate into batches file of 25 reformatted items and import them one by one to the import table
+    Load the data from a local JSON file, separate into batches file of 25 while reformatting items, and import them one by one to the DynamoDB table to import to
     """
 
     # Load the data from the local file
