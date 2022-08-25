@@ -33,7 +33,8 @@ def export_db(db_name_export: str, path: str) -> str:
 
 def import_db(file_path: str, db_name_import: str) -> None:
     """
-    Load the data from a local JSON file, separate into batches file of 25 while reformatting items, and import them one by one to the DynamoDB table to import to.
+    Load the data from a local JSON file, separate into batches file of BATCH_SIZE (25) while reformatting items,
+    and import them one by one to the DynamoDB table to import to.
     """
 
     # Load the data from the local file
@@ -43,7 +44,7 @@ def import_db(file_path: str, db_name_import: str) -> None:
         raise Exception(f"'{file_path}' seems to be invalid: no 'Items' key found")
     print(f"\nReading {len(data['Items'])} items")
 
-    BATCH_SIZE: str = 25
+    BATCH_SIZE: int = 25
     batch_number: int = 1
     count: int = 0
     nb_batches: int = ceil(len(data["Items"]) / BATCH_SIZE)
