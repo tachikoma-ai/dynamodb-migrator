@@ -6,7 +6,9 @@ from math import ceil
 from typing import Optional
 
 
-def export_db(path: str, db_name_export: Optional[str] = None) -> str:
+def export_db(
+    path: str, timestamp: bool = True, db_name_export: Optional[str] = None
+) -> str:
     """
     Export DynamoDB table content to a local JSON file.
     Output: the export file path
@@ -15,9 +17,9 @@ def export_db(path: str, db_name_export: Optional[str] = None) -> str:
     if not db_name_export:
         db_name_export: str = input("\nName of DynamoDB table to export from: ")
 
-    export_filename: str = (
-        f"{db_name_export}_export_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
-    )
+    export_filename: str = f"{db_name_export}_export.json"
+    if timestamp:
+        export_filename: str = f"{db_name_export}_export_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
     if not os.path.exists(path):
         # Create the directory because it does not exist
         os.makedirs(os.path.join(os.getcwd(), path))
@@ -96,9 +98,11 @@ def migrate(
 ) -> None:
     EXPORT_PATH: str = "exports/"  # with no slash at the beginning
     # Export data from the export table
-    export_file_path: str = export_db(EXPORT_PATH, db_name_export)
+    export_file_path: str = export_db(
+        path=EXPORT_PATH, timestamp=True, db_name_export=db_name_export
+    )
     # Import data into the import table
-    import_db(export_file_path, db_name_import)
+    import_db(file_path=export_file_path, db_name_import=db_name_import)
 
 
 migrate()
