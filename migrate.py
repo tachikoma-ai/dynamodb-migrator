@@ -6,11 +6,15 @@ from math import ceil
 from typing import Optional
 
 
-def export_db(db_name_export: str, path: str) -> str:
+def export_db(path: str, db_name_export: Optional[str] = None) -> str:
     """
     Export DynamoDB table content to a local JSON file.
     Output: the export file path
     """
+
+    if not db_name_export:
+        db_name_export: str = input("\nName of DynamoDB table to export from: ")
+
     export_filename: str = (
         f"{db_name_export}_export_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
     )
@@ -31,11 +35,14 @@ def export_db(db_name_export: str, path: str) -> str:
     return export_file_path
 
 
-def import_db(file_path: str, db_name_import: str) -> None:
+def import_db(file_path: str, db_name_import: Optional[str] = None) -> None:
     """
     Load the data from a local JSON file, separate into batches file of BATCH_SIZE (25) while reformatting items,
     and import them one by one to the DynamoDB table to import to.
     """
+
+    if not db_name_import:
+        db_name_import: str = input("\nName of DynamoDB table to import to: ")
 
     # Load the data from the local file
     with open(file_path) as infile:
@@ -87,14 +94,10 @@ def import_db(file_path: str, db_name_import: str) -> None:
 def migrate(
     db_name_export: Optional[str] = None, db_name_import: Optional[str] = None
 ) -> None:
-    if not db_name_export:
-        db_name_export: str = input("\nName of DynamoDB table to export from: ")
     EXPORT_PATH: str = "exports/"  # with no slash at the beginning
     # Export data from the export table
-    export_file_path: str = export_db(db_name_export, EXPORT_PATH)
+    export_file_path: str = export_db(EXPORT_PATH, db_name_export)
     # Import data into the import table
-    if not db_name_import:
-        db_name_import: str = input("\nName of DynamoDB table to import to: ")
     import_db(export_file_path, db_name_import)
 
 
