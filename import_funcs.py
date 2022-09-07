@@ -102,10 +102,12 @@ def create_ddb_dict(item: dict) -> dict:
                 ddb_dict[key] = {"BOOL": True}
             elif value == "FALSE":
                 ddb_dict[key] = {"BOOL": False}
+            elif isinstance(value, int):
+                ddb_dict[key] = {"N": value}
             else:
                 ddb_dict[key] = {"S": str(value)}
-        if (key == "created") and (value == "none"):
+        if (key in ["created", "createdAt"]) and (value == "none"):
             ddb_dict[key] = {
-                "S": str(datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z"))
+                "S": str(datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z"))
             }
     return ddb_dict
