@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 from datetime import datetime
@@ -23,13 +24,13 @@ def export_ddb(
         os.makedirs(os.path.join(os.getcwd(), path))
     export_file_path: str = os.path.join(os.getcwd(), path, export_filename)
     export_command: str = f"aws dynamodb scan --table-name {db_name_export} --no-paginate > {export_file_path}"
-    subprocess.call(
-        export_command,
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
+    subprocess.check_output(export_command, shell=True)
 
-    print(f"\nTable '{db_name_export}' exported to '{export_file_path}'")
+    file = open(export_file_path, "r")
+    print(
+        "\nTable '{}' exported to '{}' with {} items.".format(
+            db_name_export, export_file_path, len(json.load(file)["Items"])
+        )
+    )
 
     return export_file_path
