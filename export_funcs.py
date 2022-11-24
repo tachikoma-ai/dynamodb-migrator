@@ -14,7 +14,7 @@ def export_ddb(
     """
 
     if not db_name_export:
-        db_name_export: str = input("\nName of DynamoDB table to export from: ")
+        db_name_export = input("\nName of DynamoDB table to export from: ")
 
     export_filename: str = f"{db_name_export}_export.json"
     if timestamp:

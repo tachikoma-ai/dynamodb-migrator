@@ -7,7 +7,7 @@ from typing import Optional
 
 
 def import_ddb_from_ddb_json(
-    file_path: str, db_name_import: Optional[str] = None
+    file_path: str, db_name_import: Optional[str] = None, fake: Optional[bool] = True
 ) -> None:
     """
     Load the data from a DyanmoDB export JSON file and import it to the DynamoDB table to import to.
@@ -23,11 +23,12 @@ def import_ddb_from_ddb_json(
         raise Exception(f"'{file_path}' seems to be invalid: no 'Items' key found")
     print(f"\nReading {len(data['Items'])} items")
 
-    import_data_in_ddb(data=data["Items"], db_name_import=db_name_import, convert_data=False)
-
+    import_data_in_ddb(
+        data=data["Items"], db_name_import=db_name_import, convert_data=False
+    )
 
 def import_ddb_from_dict_json(
-    file_path: str, db_name_import: Optional[str] = None
+    file_path: str, db_name_import: Optional[str] = None, fake: Optional[bool] = True
 ) -> None:
     """
     Load the data from a local JSON file and import it to the DynamoDB table to import to.
@@ -46,7 +47,7 @@ def import_ddb_from_dict_json(
     import_data_in_ddb(data=data["Items"], db_name_import=db_name_import, convert_data=True)
 
 
-def import_data_in_ddb(data: dict, db_name_import: str, convert_data: False) -> None:
+def import_data_in_ddb(data: dict, db_name_import: str, convert_data: False, fake=True) -> None:
     """
     Separate the data into batches file of BATCH_SIZE (25) while reformatting items,
     and import them one by one to the DynamoDB table to import to.
@@ -78,20 +79,25 @@ def import_data_in_ddb(data: dict, db_name_import: str, convert_data: False) -> 
                 json.dump(import_data, outfile, ensure_ascii=False)
 
             import_command: str = f"aws dynamodb batch-write-item --request-items file://{import_filename}"
-            subprocess.call(
-                import_command,
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
+            if not fake:
+                subprocess.call(
+                    import_command,
+                    shell=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
 
             batch_number += 1
 
             os.remove(import_filename)
-
-    print(
-        f"\nImported {count} items in {batch_number - 1} batches to '{db_name_import}'"
-    )
+    if fake:
+        print(
+            f"\nFake imported {count} items in {batch_number - 1} batches to '{db_name_import}'"
+        )
+    else:
+        print(
+            f"\nImported {count} items in {batch_number - 1} batches to '{db_name_import}'"
+        )
 
 
 def create_ddb_dict(item: dict) -> dict:
