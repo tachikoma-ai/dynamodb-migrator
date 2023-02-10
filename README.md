@@ -1,4 +1,4 @@
-# DynamoDB migration script
+# DynamoDB migrator
 
 Simple Python script to migrate the content of an AWS DynamoDB table to another.
 

@@ -1,5 +1,4 @@
-from import_funcs import import_ddb_from_ddb_json
-from export_funcs import export_ddb
+from ddb_migrator import export_ddb, import_ddb_from_ddb_json
 
 
 EXPORT_PATH: str = "exports/"  # with no slash at the beginning
@@ -10,4 +9,8 @@ export_file_path: str = export_ddb(
 )
 
 # Import data into the import table
-import_ddb_from_ddb_json(file_path=export_file_path, db_name_import="my-ddb-table-name-to-import-to", fake=True)
+import_ddb_from_ddb_json(
+    file_path=export_file_path,
+    db_name_import="my-ddb-table-name-to-import-to",
+    fake=True,
+)

@@ -8,8 +8,12 @@ from typing import Optional
 def export_ddb(
     path: str, timestamp: bool = True, db_name_export: Optional[str] = None
 ) -> str:
-    """
-    Export DynamoDB table content to a local JSON file.
+    """Export DynamoDB table content to a local JSON file.
+
+    Args:
+        path: the path to the directory where the export file will be saved
+        timestamp: whether to add a timestamp to the export file name
+        db_name_export: the name of the DynamoDB table to export from.  If not provided, will ask for it.
     Output: the export file path
     """
 

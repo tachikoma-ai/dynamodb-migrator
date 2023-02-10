@@ -9,8 +9,11 @@ from typing import Optional
 def import_ddb_from_ddb_json(
     file_path: str, db_name_import: Optional[str] = None, fake: Optional[bool] = True
 ) -> None:
-    """
-    Load the data from a DyanmoDB export JSON file and import it to the DynamoDB table to import to.
+    """Load the data from a DyanmoDB export JSON file and import it to the DynamoDB table to import to.
+    Args:
+        file_path (str): Path to the JSON file to import from.
+        db_name_import (str, optional): Name of the DynamoDB table to import to. If not provided, will ask for it.
+        fake (bool, optional): If True, will not import the data, but will print the command that would have been used. Defaults to True.
     """
 
     if not db_name_import:
@@ -24,14 +27,21 @@ def import_ddb_from_ddb_json(
     print(f"\nReading {len(data['Items'])} items")
 
     import_data_in_ddb(
-        data=data["Items"], db_name_import=db_name_import, convert_data=False
+        data=data["Items"],
+        db_name_import=db_name_import,
+        convert_data=False,
+        fake=fake
     )
+
 
 def import_ddb_from_dict_json(
     file_path: str, db_name_import: Optional[str] = None, fake: Optional[bool] = True
 ) -> None:
-    """
-    Load the data from a local JSON file and import it to the DynamoDB table to import to.
+    """Load the data from a local JSON file and import it to the DynamoDB table to import to.
+    Args:
+        file_path (str): Path to the JSON file to import from.
+        db_name_import (str, optional): Name of the DynamoDB table to import to. If not provided, will ask for it.
+        fake (bool, optional): If True, will not import the data, but will print the command that would have been used. Defaults to True.
     """
 
     if not db_name_import:
@@ -44,10 +54,20 @@ def import_ddb_from_dict_json(
         raise Exception(f"'{file_path}' seems to be invalid, not a JSON list inside")
     print(f"\nReading {len(data)} items")
 
-    import_data_in_ddb(data=data["Items"], db_name_import=db_name_import, convert_data=True)
+    import_data_in_ddb(
+        data=data["Items"],
+        db_name_import=db_name_import,
+        convert_data=True,
+        fake=fake
+    )
 
 
-def import_data_in_ddb(data: dict, db_name_import: str, convert_data: False, fake=True) -> None:
+def import_data_in_ddb(
+    data: dict,
+    db_name_import: str,
+    convert_data: Optional[bool] = False,
+    fake: Optional[bool] = True,
+) -> None:
     """
     Separate the data into batches file of BATCH_SIZE (25) while reformatting items,
     and import them one by one to the DynamoDB table to import to.
@@ -58,7 +78,6 @@ def import_data_in_ddb(data: dict, db_name_import: str, convert_data: False, fak
     nb_batches: int = ceil(len(data) / BATCH_SIZE)
 
     for item in data:
-
         if convert_data:
             # Transform the data into a format that can be imported into DynamoDB
             item: dict = create_ddb_dict(item)
@@ -70,7 +89,6 @@ def import_data_in_ddb(data: dict, db_name_import: str, convert_data: False, fak
         count += 1
 
         if (count % BATCH_SIZE == 0) or (count == len(data)):
-
             print(f"\nImporting batch {batch_number}/{nb_batches}")
 
             # Save the transformed data to a file

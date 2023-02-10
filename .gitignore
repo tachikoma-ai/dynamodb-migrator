@@ -1,4 +1,5 @@
-local_settings.py
+# Project-specific
+/exports
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

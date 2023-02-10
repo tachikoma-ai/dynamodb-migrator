@@ -1,0 +1,20 @@
+[build-system]
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
+
+[project]
+name = "ddb-migrator"
+version = "0.1.0"
+authors = [{ name = "Adrien Carpentier", email = "me@adriencarpentier.com" }]
+description = "Python package to export, import or migrate contents of AWS DynamoDB tables"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/tachikoma-ai/dynamodb-migration-script"
+"Bug Tracker" = "https://github.com/tachikoma-ai/dynamodb-migration-script/issues"
