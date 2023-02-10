@@ -16,5 +16,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/tachikoma-ai/dynamodb-migration-script"
-"Bug Tracker" = "https://github.com/tachikoma-ai/dynamodb-migration-script/issues"
+"Homepage" = "https://github.com/tachikoma-ai/dynamodb-migrator/"
+"Bug Tracker" = "https://github.com/tachikoma-ai/dynamodb-migrator/issues"
