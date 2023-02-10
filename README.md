@@ -1,6 +1,8 @@
 # DynamoDB migrator
 
-Simple Python script to migrate the content of an AWS DynamoDB table to another.
+Python package to migrate the content of an AWS DynamoDB table to another, using AWS CLI commands.
+
+DynamoDB migrator needs to be run in a script, as it uses CLI commands and prompts.
 
 It consists of two main functions that can be used independently:
 - `export_ddb` to export data from a DynamoDB database

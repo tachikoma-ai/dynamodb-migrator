@@ -11,10 +11,14 @@ def export_ddb(
     """Export DynamoDB table content to a local JSON file.
 
     Args:
-        path: the path to the directory where the export file will be saved
-        timestamp: whether to add a timestamp to the export file name
-        db_name_export: the name of the DynamoDB table to export from.  If not provided, will ask for it.
-    Output: the export file path
+        path (str): the path to the directory where the export file will be saved
+        timestamp (bool): whether to add a timestamp to the export file name
+        db_name_export (str, optional): the name of the DynamoDB table to export from.
+            If not provided, will ask for it.
+
+    Returns:
+        str:the export file path
+
     """
 
     if not db_name_export:
